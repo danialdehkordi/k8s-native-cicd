@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: build-container-image-
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+spec:
+  entrypoint: build
+  serviceAccountName: workflow
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: regcred
+      items:
+        - key: .dockerconfigjson
+          path: config.json
+  templates:
+  - name: build
+    dag:
+      tasks:
+      - name: build
+        templateRef:
+          name: build-container-image
+          template: build-kaniko-git
+          clusterScope: true
+        arguments:
+          parameters:
+          - name: app_repo
+            value: git://github.com/vfarcic/argo-workflows-demo
+          - name: container_image
+            value: europe-west3-docker.pkg.dev/coen-danial-dehkordi/artifact-repository/test-image
+          - name: container_tag
+            value: "1.0.0"
