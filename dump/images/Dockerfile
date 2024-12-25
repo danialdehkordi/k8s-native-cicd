@@ -1,2 +1,2 @@
-#6
+#66
 FROM ubuntu
