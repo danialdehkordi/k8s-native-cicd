@@ -21,7 +21,7 @@ spec:
         arguments:
           parameters:
           - name: app_repo
-            value: git://github.com/danialdehkordi/k8s-native-cicd/argo-workflows/workflows
+            value: git://github.com/danialdehkordi/k8s-native-cicd
           - name: container_image
             value: europe-west3-docker.pkg.dev/coen-danial-dehkordi/artifact-repository/test-image
           - name: container_tag
