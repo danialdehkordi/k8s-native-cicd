@@ -6,9 +6,7 @@ metadata:
     workflows.argoproj.io/archive-strategy: "false"
 spec:
   entrypoint: build
-  # serviceAccountName: workflow
-  # volumes:
-  # - name: kaniko-secret
+  serviceAccountName: argo
   templates:
   - name: build
     dag:

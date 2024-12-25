@@ -15,8 +15,7 @@ spec:
       command: [/kaniko/executor]
       args:
       - --context={{inputs.parameters.app_repo}}
+      - --dockerfile=argo-workflows/workflows/Dockerfile
       - --destination={{inputs.parameters.container_image}}:{{inputs.parameters.container_tag}}
-      # volumeMounts:
-      #   - name: kaniko-secret
-      #     mountPath: /kaniko/.docker/
+
   
