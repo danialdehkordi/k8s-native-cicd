@@ -7,8 +7,8 @@ metadata:
 spec:
   entrypoint: build
   # serviceAccountName: workflow
-  volumes:
-  - name: kaniko-secret
+  # volumes:
+  # - name: kaniko-secret
   templates:
   - name: build
     dag:
