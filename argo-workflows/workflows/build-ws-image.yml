@@ -6,14 +6,9 @@ metadata:
     workflows.argoproj.io/archive-strategy: "false"
 spec:
   entrypoint: build
-  serviceAccountName: workflow
+  # serviceAccountName: workflow
   volumes:
   - name: kaniko-secret
-    secret:
-      secretName: regcred
-      items:
-        - key: .dockerconfigjson
-          path: config.json
   templates:
   - name: build
     dag:
@@ -22,11 +17,11 @@ spec:
         templateRef:
           name: build-container-image
           template: build-kaniko-git
-          clusterScope: true
+          clusterScope: false
         arguments:
           parameters:
           - name: app_repo
-            value: git://github.com/vfarcic/argo-workflows-demo
+            value: git://github.com/danialdehkordi/k8s-native-cicd/argo-workflows/workflows
           - name: container_image
             value: europe-west3-docker.pkg.dev/coen-danial-dehkordi/artifact-repository/test-image
           - name: container_tag

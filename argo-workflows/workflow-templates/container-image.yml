@@ -16,7 +16,7 @@ spec:
       args:
       - --context={{inputs.parameters.app_repo}}
       - --destination={{inputs.parameters.container_image}}:{{inputs.parameters.container_tag}}
-      volumeMounts:
-        - name: kaniko-secret
-          mountPath: /kaniko/.docker/
+      # volumeMounts:
+      #   - name: kaniko-secret
+      #     mountPath: /kaniko/.docker/
   
