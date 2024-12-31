@@ -27,6 +27,9 @@ spec:
       - push
       active: true
       insecure: true
+      apiToken:
+        name: github-access
+        key: token      
 ---
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
@@ -59,7 +62,8 @@ spec:
   selector:
     eventsource-name: github
   ports:
-  - port: 13000
+  - name: http
+    port: 13000
     targetPort: 13000
     protocol: TCP
 ---
