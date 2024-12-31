@@ -1,0 +1,82 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: github
+  namespace: argo-events
+  labels:
+    app: github
+    name: github
+spec:
+  github:
+    example:
+      repositories:
+        - owner: danialdehkordi
+          names:
+            - k8s-native-cicd
+      webhook:
+        url: http://argocd.gmarousi.com
+        method: POST
+        endpoint: /webhook
+        port: "13000"
+      webhookSecret:
+        name: github-secret
+        key: token
+      contentType: json
+      events:
+      - push
+      active: true
+      insecure: true
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: webhook-backend-config
+  namespace: argo-events
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    timeoutSec: 5
+    healthyThreshold: 1
+    unhealthyThreshold: 2
+    type: HTTP
+    requestPath: /health
+    port: 13000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: github-svc
+  namespace: argo-events
+  annotations:
+    cloud.google.com/backend-config: '{"ports": {"http":"webhook-backend-config"}}'
+    cloud.google.com/neg: '{"ingress":true}'  
+  labels:
+    app: github
+    name: github-svc
+spec:
+  type: ClusterIP
+  selector:
+    eventsource-name: github
+  ports:
+  - port: 13000
+    targetPort: 13000
+    protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: github-eventsource
+  namespace: argo-events
+spec:
+  rules:
+  - host: argocd.gmarousi.com
+    http:
+      paths:
+      - path: /webhook
+        pathType: Exact
+        backend:
+          service:
+           name: github-svc
+           port:
+             number: 13000
