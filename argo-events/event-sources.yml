@@ -17,14 +17,14 @@ spec:
       webhook:
         url: http://argocd.gmarousi.com
         method: POST
-        endpoint: /webhook
+        endpoint: /example
         port: "13000"
       webhookSecret:
-        name: github-secret
-        key: token
+        name: github-access
+        key: secret
       contentType: json
       events:
-      - push
+      - "*"
       active: true
       insecure: true
       apiToken:
@@ -77,7 +77,7 @@ spec:
   - host: argocd.gmarousi.com
     http:
       paths:
-      - path: /webhook
+      - path: /example
         pathType: Exact
         backend:
           service:

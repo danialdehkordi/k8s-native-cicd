@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argo
+  namespace: argo
+spec:
+  rules:
+    - host: argo.gmarousi.com
+      http:
+        paths:
+        - pathType: ImplementationSpecific
+          path: "/*"   # "*" is needed. Without this, the UI Javascript and CSS will not load properly
+          backend:
+            service:
+              name: argo-server
+              port:
+                number: 2746
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: argo-backend-config
+  namespace: argo
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    timeoutSec: 5
+    healthyThreshold: 1
+    unhealthyThreshold: 2
+    type: HTTP
+    requestPath: /healthz
+    port: 2746
