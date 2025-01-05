@@ -4,15 +4,15 @@ metadata:
   name: webhook
   namespace: argo-events
 spec:
-  # template:
-  #   serviceAccountName: operate-workflow-sa
+  template:
+    serviceAccountName: operate-workflow-sa
   dependencies:
     - name: test-dep
       eventSourceName: github
       eventName: example
   triggers:
     - template:
-        name: argo-workflow-trigger
+        name: build-container-image-trigger
         argoWorkflow:
           operation: submit
           source:
@@ -20,27 +20,24 @@ spec:
               apiVersion: argoproj.io/v1alpha1
               kind: Workflow
               metadata:
-                name: special-trigger
+                generateName: build-container-image-
               spec:
-                # entrypoint: whalesay
-                # arguments:
-                  # parameters:
-                  #   - name: message
-                  #     # the value will get overridden by event payload from test-dep
-                  #     value: hello world
-                workflowTemplateRef:
-                  name: build-container-image
-                # templates:
-                #   - name: whalesay
-                #     inputs:
-                #       parameters:
-                #         - name: message
-                #     container:
-                #       image: docker/whalesay:latest
-                #       command: [cowsay]
-                #       args: ["{{inputs.parameters.message}}"]
-          # parameters:
-          #   - src:
-          #       dependencyName: test-dep
-          #       dataKey: body
-          #     dest: spec.arguments.parameters.0.value
+                entrypoint: build
+                # serviceAccountName: argo
+                templates:
+                  - name: build
+                    dag:
+                      tasks:
+                        - name: build
+                          templateRef:
+                            name: build-container-image
+                            template: build-kaniko-git
+                            clusterScope: false
+                          arguments:
+                            parameters:
+                              - name: app_repo
+                                value: git://github.com/danialdehkordi/k8s-native-cicd
+                              - name: container_image
+                                value: europe-west3-docker.pkg.dev/coen-danial-dehkordi/artifact-repository/test-image
+                              - name: container_tag
+                                value: "1.0.0"
